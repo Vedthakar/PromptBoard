@@ -1,19 +1,20 @@
-from rest_framework import generics, permissions
+# Boards/views.py
 from django.db.models import Count, Q
+from rest_framework import generics, permissions
+
 from .models import Board, Prompt
 from .serailizers import BoardSerializer, PromptSerializer
 
 
 class BoardListCreateView(generics.ListCreateAPIView):
     serializer_class = BoardSerializer
-    # 🔴 TEMP: allow anyone to list + create boards
+    # TEMP: let anyone create boards
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return Board.objects.annotate(prompt_count=Count('prompts'))
+        return Board.objects.annotate(prompt_count=Count("prompts"))
 
     def perform_create(self, serializer):
-        # no owner field yet, just save the board
         serializer.save()
 
 
@@ -21,10 +22,10 @@ class BoardDetailPromptsView(generics.ListAPIView):
     serializer_class = PromptSerializer
 
     def get_queryset(self):
-        slug = self.kwargs['slug']
-        category = self.request.query_params.get('category')
-        model = self.request.query_params.get('model')
-        search = self.request.query_params.get('q')
+        slug = self.kwargs["slug"]
+        category = self.request.query_params.get("category")
+        model = self.request.query_params.get("model")
+        search = self.request.query_params.get("q")
 
         qs = Prompt.objects.filter(board__slug=slug)
 
@@ -43,11 +44,12 @@ class BoardDetailPromptsView(generics.ListAPIView):
 
 class PromptListCreateView(generics.ListCreateAPIView):
     serializer_class = PromptSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # TEMP: allow anyone to POST; UI will gate on "logged in"
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        search = self.request.query_params.get('q')
-        board_slug = self.request.query_params.get('board')
+        search = self.request.query_params.get("q")
+        board_slug = self.request.query_params.get("board")
         qs = Prompt.objects.all()
 
         if board_slug:

@@ -1,3 +1,4 @@
+// src/pages/BoardDetail.tsx
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -17,28 +18,45 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Layers, Upload } from "lucide-react";
-import { Prompt } from "@/types";
+import { Prompt, QuestionTag } from "@/types";  // 👈 make sure QuestionTag is imported
 import { useAuth } from "@/contexts/AuthContext";
+
 
 const BoardDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { boards, prompts, mindMaps, questions, addMindMap, addQuestion } =
-    useBoards();
+  const {
+    boards,
+    prompts,
+    mindMaps,
+    questions,
+    addMindMap,
+    addQuestion,
+    addPrompt,
+  } = useBoards();
   const { user } = useAuth();
-
   const board = boards.find((b) => b.slug === slug);
 
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
   const [modelFilter, setModelFilter] = useState<string>("All");
+
+  // Create prompt form state
+  const [promptTitle, setPromptTitle] = useState("");
+  const [promptDescription, setPromptDescription] = useState("");
+  const [promptBody, setPromptBody] = useState("");
+  const [promptCategory, setPromptCategory] =
+    useState<Prompt["category"]>("Study");
+  const [promptModel, setPromptModel] = useState<Prompt["model"]>("GPT");
+  const [isSavingPrompt, setIsSavingPrompt] = useState(false);
 
   // Mind Map form state
   const [mindMapFile, setMindMapFile] = useState<File | null>(null);
   const [mindMapTitle, setMindMapTitle] = useState("");
   const [mindMapDescription, setMindMapDescription] = useState("");
 
-  // Question form state
-  const [questionText, setQuestionText] = useState("");
-  const [questionTag, setQuestionTag] = useState<string>("");
+// Question form state
+const [questionText, setQuestionText] = useState("");
+const [questionTag, setQuestionTag] = useState<QuestionTag | "">("");  // 👈 typed
+
 
   if (!board) {
     return (
@@ -59,8 +77,7 @@ const BoardDetail = () => {
   const filteredPrompts = boardPrompts.filter((prompt) => {
     const matchesCategory =
       categoryFilter === "All" || prompt.category === categoryFilter;
-    const matchesModel =
-      modelFilter === "All" || prompt.model === modelFilter;
+    const matchesModel = modelFilter === "All" || prompt.model === modelFilter;
     return matchesCategory && matchesModel;
   });
 
@@ -72,16 +89,36 @@ const BoardDetail = () => {
     "Image",
     "General",
   ];
-
-  const models: Array<Prompt["model"] | "All"> = [
-    "All",
-    "GPT",
-    "Gemini",
-    "Claude",
-  ];
+  const models: Array<Prompt["model"] | "All"> = ["All", "GPT", "Gemini", "Claude"];
 
   const boardMindMaps = mindMaps.filter((m) => m.boardSlug === slug);
   const boardQuestions = questions.filter((q) => q.boardSlug === slug);
+
+  const handlePromptSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!slug || !promptTitle.trim() || !promptBody.trim()) return;
+
+    try {
+      setIsSavingPrompt(true);
+      await addPrompt({
+        boardSlug: slug,
+        title: promptTitle,
+        description: promptDescription,
+        body: promptBody,
+        model: promptModel,
+        category: promptCategory,
+      });
+
+      // reset form
+      setPromptTitle("");
+      setPromptDescription("");
+      setPromptBody("");
+      setPromptCategory("Study");
+      setPromptModel("GPT");
+    } finally {
+      setIsSavingPrompt(false);
+    }
+  };
 
   const handleMindMapSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,12 +144,13 @@ const BoardDetail = () => {
     addQuestion({
       boardSlug: slug,
       text: questionText,
-      tag: questionTag || undefined,
+      tag: questionTag || undefined,   // 👈 now QuestionTag | undefined, all good
     });
 
     setQuestionText("");
     setQuestionTag("");
   };
+
 
   return (
     <div className="min-h-screen">
@@ -151,6 +189,110 @@ const BoardDetail = () => {
 
             {/* Prompts Tab */}
             <TabsContent value="prompts">
+              {/* Create Prompt */}
+              {user ? (
+                <Card className="p-6 mb-8 border-border">
+                  <h2 className="text-xl font-bold mb-4">Add Prompt</h2>
+                  <form onSubmit={handlePromptSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="prompt-title">Title</Label>
+                      <Input
+                        id="prompt-title"
+                        value={promptTitle}
+                        onChange={(e) => setPromptTitle(e.target.value)}
+                        placeholder="Enter prompt title"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="prompt-description">
+                        Short description
+                      </Label>
+                      <Textarea
+                        id="prompt-description"
+                        value={promptDescription}
+                        onChange={(e) =>
+                          setPromptDescription(e.target.value)
+                        }
+                        placeholder="Describe what this prompt does"
+                        rows={2}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="prompt-body">Prompt text</Label>
+                      <Textarea
+                        id="prompt-body"
+                        value={promptBody}
+                        onChange={(e) => setPromptBody(e.target.value)}
+                        placeholder="Full prompt text"
+                        rows={5}
+                        required
+                      />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <Label>Category</Label>
+                        <Select
+                          value={promptCategory}
+                          onValueChange={(val) =>
+                            setPromptCategory(val as Prompt["category"])
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories
+                              .filter((c) => c !== "All")
+                              .map((category) => (
+                                <SelectItem key={category} value={category}>
+                                  {category}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex-1">
+                        <Label>Model</Label>
+                        <Select
+                          value={promptModel}
+                          onValueChange={(val) =>
+                            setPromptModel(val as Prompt["model"])
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select model" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {models
+                              .filter((m) => m !== "All")
+                              .map((model) => (
+                                <SelectItem key={model} value={model}>
+                                  {model}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <Button type="submit" disabled={isSavingPrompt}>
+                      {isSavingPrompt ? "Saving…" : "Add Prompt"}
+                    </Button>
+                  </form>
+                </Card>
+              ) : (
+                <Card className="p-6 mb-8 border-border">
+                  <p className="text-sm text-muted-foreground">
+                    Sign in to add prompts to this board.
+                  </p>
+                </Card>
+              )}
+
               {/* Filter Bar */}
               <div className="bg-card border border-border rounded-lg p-4 mb-8">
                 <div className="flex flex-col sm:flex-row gap-4">
@@ -198,8 +340,7 @@ const BoardDetail = () => {
                 </div>
 
                 <div className="mt-4 text-sm text-muted-foreground">
-                  Showing {filteredPrompts.length} of {boardPrompts.length}{" "}
-                  prompts
+                  Showing {filteredPrompts.length} of {boardPrompts.length} prompts
                 </div>
               </div>
 
@@ -339,16 +480,14 @@ const BoardDetail = () => {
                       <Label htmlFor="question-tag">Tag (optional)</Label>
                       <Select
                         value={questionTag}
-                        onValueChange={setQuestionTag}
+                        onValueChange={(value: QuestionTag) => setQuestionTag(value)}
                       >
                         <SelectTrigger id="question-tag">
                           <SelectValue placeholder="Select a tag" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="concept">Concept</SelectItem>
-                          <SelectItem value="assignment">
-                            Assignment-style
-                          </SelectItem>
+                          <SelectItem value="assignment">Assignment-style</SelectItem>
                           <SelectItem value="exam">Exam practice</SelectItem>
                         </SelectContent>
                       </Select>
