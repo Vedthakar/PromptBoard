@@ -2,28 +2,40 @@ import { Board, Prompt } from "@/types";
 
 export const boards: Board[] = [
   {
+    id: "board-1",
     slug: "csca48",
     name: "CSCA48",
     description: "Data Structures & Algorithms in C - UTSC course prompts for debugging, learning, and assignments",
     promptCount: 12,
+    visibility: "public",
+    ownerId: "admin",
   },
   {
+    id: "board-2",
     slug: "resumes-careers",
     name: "Resumes & Careers",
     description: "Professional resume building, cover letters, and career development prompts",
     promptCount: 18,
+    visibility: "public",
+    ownerId: "admin",
   },
   {
+    id: "board-3",
     slug: "gemini-photos",
     name: "Gemini Photos",
     description: "Creative image generation and photo editing prompts for Google Gemini",
     promptCount: 8,
+    visibility: "public",
+    ownerId: "admin",
   },
   {
+    id: "board-4",
     slug: "general-study",
     name: "General Study",
     description: "Universal study techniques, note-taking, and learning optimization prompts",
     promptCount: 15,
+    visibility: "public",
+    ownerId: "admin",
   },
 ];
 

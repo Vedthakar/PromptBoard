@@ -4,11 +4,13 @@ import { BoardCard } from "@/components/BoardCard";
 import { PromptCard } from "@/components/PromptCard";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/SearchBar";
-import { boards, prompts } from "@/data/mockData";
+import { useBoards } from "@/contexts/BoardContext";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const Index = () => {
-  const popularBoards = boards.slice(0, 4);
+  const { boards, prompts } = useBoards();
+  const publicBoards = boards.filter((b) => b.visibility === "public");
+  const popularBoards = publicBoards.slice(0, 4);
   const latestPrompts = prompts.slice(0, 8);
 
   return (
@@ -79,7 +81,7 @@ const Index = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {popularBoards.map((board) => (
-              <BoardCard key={board.slug} board={board} />
+              <BoardCard key={board.id} board={board} />
             ))}
           </div>
         </div>

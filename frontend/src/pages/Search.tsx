@@ -2,13 +2,16 @@ import { useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BoardCard } from "@/components/BoardCard";
 import { PromptCard } from "@/components/PromptCard";
-import { boards, prompts } from "@/data/mockData";
+import { useBoards } from "@/contexts/BoardContext";
 
 export default function Search() {
+  const { boards, prompts } = useBoards();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
 
-  const filteredBoards = boards.filter(
+  const publicBoards = boards.filter((b) => b.visibility === "public");
+
+  const filteredBoards = publicBoards.filter(
     (board) =>
       board.name.toLowerCase().includes(query.toLowerCase()) ||
       board.description.toLowerCase().includes(query.toLowerCase())
@@ -39,7 +42,7 @@ export default function Search() {
             <h2 className="text-2xl font-bold mb-6">Boards</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredBoards.map((board) => (
-                <BoardCard key={board.slug} board={board} />
+                <BoardCard key={board.id} board={board} />
               ))}
             </div>
           </section>
