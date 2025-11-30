@@ -1,5 +1,9 @@
 from rest_framework import serializers
 from .models import Board, Prompt
+# serializers.py
+from rest_framework import serializers
+from django.utils.text import slugify
+from .models import Board, Prompt
 
 class BoardSerializer(serializers.ModelSerializer):
     prompt_count = serializers.IntegerField(read_only=True)
@@ -7,11 +11,20 @@ class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = ['id', 'name', 'slug', 'description', 'prompt_count']
+        extra_kwargs = {
+            'slug': {'required': False},  # allow omitting slug from POST
+        }
+
+    def create(self, validated_data):
+        if not validated_data.get('slug'):
+            validated_data['slug'] = slugify(validated_data['name'])
+        return super().create(validated_data)
 
 
 class PromptSerializer(serializers.ModelSerializer):
+    board_slug = serializers.CharField(source="board.slug", read_only=True)
+
     board = BoardSerializer(read_only=True)
-    board_slug = serializers.SlugField(write_only=True)
     author_name = serializers.CharField(source='author.display_name', read_only=True)
 
     class Meta:

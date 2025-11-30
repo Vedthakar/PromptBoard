@@ -1,13 +1,20 @@
 from rest_framework import generics, permissions
 from django.db.models import Count, Q
 from .models import Board, Prompt
-from .serializers import BoardSerializer, PromptSerializer
+from .serailizers import BoardSerializer, PromptSerializer
 
-class BoardListView(generics.ListAPIView):
+
+class BoardListCreateView(generics.ListCreateAPIView):
     serializer_class = BoardSerializer
+    # 🔴 TEMP: allow anyone to list + create boards
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         return Board.objects.annotate(prompt_count=Count('prompts'))
+
+    def perform_create(self, serializer):
+        # no owner field yet, just save the board
+        serializer.save()
 
 
 class BoardDetailPromptsView(generics.ListAPIView):
@@ -21,17 +28,17 @@ class BoardDetailPromptsView(generics.ListAPIView):
 
         qs = Prompt.objects.filter(board__slug=slug)
 
-        if category and category.lower() != 'all':
+        if category and category.lower() != "all":
             qs = qs.filter(category__iexact=category)
-        if model and model.lower() != 'all':
+        if model and model.lower() != "all":
             qs = qs.filter(model__iexact=model)
         if search:
             qs = qs.filter(
-                Q(title__icontains=search) |
-                Q(description__icontains=search) |
-                Q(body__icontains=search)
+                Q(title__icontains=search)
+                | Q(description__icontains=search)
+                | Q(body__icontains=search)
             )
-        return qs.order_by('-created_at')
+        return qs.order_by("-created_at")
 
 
 class PromptListCreateView(generics.ListCreateAPIView):
@@ -47,11 +54,11 @@ class PromptListCreateView(generics.ListCreateAPIView):
             qs = qs.filter(board__slug=board_slug)
         if search:
             qs = qs.filter(
-                Q(title__icontains=search) |
-                Q(description__icontains=search) |
-                Q(body__icontains=search)
+                Q(title__icontains=search)
+                | Q(description__icontains=search)
+                | Q(body__icontains=search)
             )
-        return qs.order_by('-created_at')
+        return qs.order_by("-created_at")
 
     def perform_create(self, serializer):
         serializer.save()

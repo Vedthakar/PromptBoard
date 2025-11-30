@@ -1,3 +1,4 @@
+// src/pages/MyBoards.tsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -17,23 +18,25 @@ const MyBoards = () => {
   const [description, setDescription] = useState("");
   const [isPublic, setIsPublic] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!name.trim()) return;
 
-    const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
-    addBoard({
-      slug,
-      name,
-      description,
-      visibility: isPublic ? "public" : "private",
-      ownerId: currentUserId,
-    });
+  const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
 
-    setName("");
-    setDescription("");
-    setIsPublic(true);
-  };
+  await addBoard({
+    slug,
+    name,
+    description,
+    visibility: isPublic ? "public" : "private",
+    ownerId: currentUserId,
+  });
+
+  setName("");
+  setDescription("");
+  setIsPublic(true);
+};
+
 
   const myBoards = boards.filter((b) => b.ownerId === currentUserId);
   const privateBoards = myBoards.filter((b) => b.visibility === "private");

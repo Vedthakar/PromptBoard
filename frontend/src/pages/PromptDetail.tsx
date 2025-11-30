@@ -1,13 +1,31 @@
+// src/pages/PromptDetail.tsx
 import { useParams, Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { prompts, boards } from "@/data/mockData";
 import { ArrowLeft, Sparkle } from "lucide-react";
+import { useBoards } from "@/contexts/BoardContext";
 
 const PromptDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { prompts, boards } = useBoards();
+
   const prompt = prompts.find((p) => p.id === id);
+  const board = prompt
+    ? boards.find((b) => b.slug === prompt.boardSlug)
+    : undefined;
+
+  // Simple loading state: if nothing loaded yet
+  if (!prompt && prompts.length === 0) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading prompt…</h1>
+        </div>
+      </div>
+    );
+  }
 
   if (!prompt) {
     return (
@@ -23,8 +41,6 @@ const PromptDetail = () => {
     );
   }
 
-  const board = boards.find((b) => b.slug === prompt.boardSlug);
-
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -38,7 +54,7 @@ const PromptDetail = () => {
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to {board?.name}
+              Back to {board?.name ?? "Board"}
             </Link>
           </Button>
 
@@ -69,7 +85,7 @@ const PromptDetail = () => {
             </p>
           </div>
 
-          {/* Prompt Content (Placeholder) */}
+          {/* Prompt Content (placeholder) */}
           <div className="bg-muted/30 border border-border rounded-xl p-8">
             <h2 className="text-xl font-bold mb-4">Prompt Details</h2>
             <p className="text-muted-foreground mb-4">

@@ -1,10 +1,13 @@
-from django.contrib import admin
+# Boards/urls.py
 from django.urls import path
-from Boards.views import BoardListView, BoardDetailPromptsView, PromptListCreateView
+from .views import (
+    BoardListCreateView,
+    BoardDetailPromptsView,
+    PromptListCreateView,
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/boards/', BoardListView.as_view()),
-    path('api/boards/<slug:slug>/prompts/', BoardDetailPromptsView.as_view()),
-    path('api/prompts/', PromptListCreateView.as_view()),
+    path('boards/', BoardListCreateView.as_view(), name='board-list-create'),
+    path('boards/<slug:slug>/prompts/', BoardDetailPromptsView.as_view(), name='board-prompts'),
+    path('prompts/', PromptListCreateView.as_view(), name='prompt-list-create'),
 ]
