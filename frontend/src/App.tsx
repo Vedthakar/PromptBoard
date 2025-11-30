@@ -14,6 +14,7 @@ import MyBoards from "./pages/MyBoards";
 import SignIn from "./pages/SIgnIn";
 import NotFound from "./pages/NotFound";
 import SignUp from "./pages/SignUp";
+import { Analytics } from "@vercel/analytics/next"
 
 const queryClient = new QueryClient();
 

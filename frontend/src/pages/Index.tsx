@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/SearchBar";
 import { useBoards } from "@/contexts/BoardContext";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { Analytics } from "@vercel/analytics/next"
 
 const Index = () => {
   const { boards, prompts } = useBoards();

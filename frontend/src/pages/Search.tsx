@@ -3,7 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { BoardCard } from "@/components/BoardCard";
 import { PromptCard } from "@/components/PromptCard";
 import { useBoards } from "@/contexts/BoardContext";
-
+import { Analytics } from "@vercel/analytics/next"
 export default function Search() {
   const { boards, prompts } = useBoards();
   const [searchParams] = useSearchParams();

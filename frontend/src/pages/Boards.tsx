@@ -4,6 +4,7 @@ import { useBoards } from "@/contexts/BoardContext";
 import { Layers, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { Analytics } from "@vercel/analytics/next"
 
 const Boards = () => {
   const { boards } = useBoards();

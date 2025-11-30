@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useBoards } from "@/contexts/BoardContext";
 import { ArrowRight, Lock, Globe } from "lucide-react";
-
+import { Analytics } from "@vercel/analytics/next"
 const MyBoards = () => {
   const { boards, addBoard, currentUserId } = useBoards();
   const [name, setName] = useState("");

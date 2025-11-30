@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Analytics } from "@vercel/analytics/next"
 
 const SignUp = () => {
   const [name, setName] = useState("");
