@@ -85,23 +85,43 @@ const PromptDetail = () => {
             </p>
           </div>
 
-          {/* Prompt Content (placeholder) */}
+          {/* Prompt Content */}
           <div className="bg-muted/30 border border-border rounded-xl p-8">
-            <h2 className="text-xl font-bold mb-4">Prompt Details</h2>
-            <p className="text-muted-foreground mb-4">
-              This is a placeholder for the full prompt content. In a real
-              application, this would display:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-              <li>Complete prompt text and instructions</li>
-              <li>Usage examples and best practices</li>
-              <li>Expected outputs and results</li>
-              <li>Tips for customization</li>
-            </ul>
+            {prompt.body && prompt.body.trim().length > 0 ? (
+              <>
+                <h2 className="text-xl font-bold mb-4">Prompt Text</h2>
+                <pre className="whitespace-pre-wrap rounded-md bg-background p-4 border border-border text-sm">
+                  {prompt.body}
+                </pre>
 
-            <div className="mt-8 pt-8 border-t border-border">
-              <Button className="w-full sm:w-auto">Copy Prompt</Button>
-            </div>
+                <div className="mt-8 pt-4 border-t border-border">
+                  <Button
+                    className="w-full sm:w-auto"
+                    onClick={() => navigator.clipboard.writeText(prompt.body)}
+                  >
+                    Copy Prompt
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold mb-4">Prompt Details</h2>
+                <p className="text-muted-foreground mb-4">
+                  This is a placeholder for the full prompt content. In a real
+                  application, this would display:
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                  <li>Complete prompt text and instructions</li>
+                  <li>Usage examples and best practices</li>
+                  <li>Expected outputs and results</li>
+                  <li>Tips for customization</li>
+                </ul>
+
+                <div className="mt-8 pt-8 border-t border-border">
+                  <Button className="w-full sm:w-auto">Copy Prompt</Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
