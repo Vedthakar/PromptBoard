@@ -147,6 +147,7 @@ CORS_ALLOWED_ORIGINS = [
     # keep these if you still use 5173 sometimes
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://prompt-board-iota.vercel.app/",
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
