@@ -27,7 +27,12 @@ SECRET_KEY = 'django-insecure-els+#v@)(q9*r9012#b%f29n9&4sw87-98e2dshspx^grgm$+8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+     "localhost",
+    "127.0.0.1",
+    ".onrender.com",      # Render backend
+    ".vercel.app",  
+]
 
 
 # Application definition
@@ -147,7 +152,7 @@ CORS_ALLOWED_ORIGINS = [
     # keep these if you still use 5173 sometimes
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://prompt-board-iota.vercel.app/",
+    "https://prompt-board-iota.vercel.app",
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
