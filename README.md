@@ -140,13 +140,13 @@ More than anything, this project represents the point where I started learning h
 ## Screenshots
 
 ### Website home page
-![Homepage Screenshot](./ss/homepage.png)
+![Homepage Screenshot](./frontend/ss/homepage.png)
 
 ### Prompt Example can be more complicated
-![Prompt Example](./ss/prompt.png)
+![Prompt Example](./frontend/ss/prompt.png)
 
 ### Single Board
-![board](./ss/board.png)
+![board](./frontend/ss/board.png)
 
 ### Multiple Boards
-![boards](./public/boards.png)
+![boards](./frontend/ss/boards.png)
