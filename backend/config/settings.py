@@ -87,19 +87,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',                          # from URI
-        'USER': os.environ.get('DB_USER'),     # EXACT user from pooler URI
-        'PASSWORD': os.environ.get('DB_PASSWORD'),               # your password
-        'HOST': os.environ.get('DB_HOST'),  # EXACT host from pooler URI
-        'PORT': os.environ.get('DB_PORT'),                              # port from URI
-        'OPTIONS': {
-            'sslmode': 'require',                    # required for Supabase
-        },
+use_sqlite = os.environ.get("USE_SQLITE", "").lower() in {"1", "true", "yes"}
+
+if use_sqlite:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'postgres'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
+            'HOST': os.environ.get('DB_HOST'),
+            'PORT': os.environ.get('DB_PORT'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
+        }
+    }
 
 
 
@@ -159,4 +169,3 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
-
